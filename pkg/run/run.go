@@ -14,7 +14,6 @@ type Output struct {
 type Schema struct {
 	Results map[string]float64 `json:"results"`
 	Labels  map[string]string  `json:"labels"`
-	Prefix  map[string]string  `json:"prefix"`
 }
 
 func (o *Output) RunJob(p *Params) {
