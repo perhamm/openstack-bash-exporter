@@ -11,8 +11,8 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-cmd/bash-exporter/bash-exporter
-cmd/bash-exporter/bash-exporter-linux
-cmd/bash-exporter/bash-exporter-macos
-cmd/bash-exporter/*.sh
+cmd/openstack-bash-exporter/openstack-bash-exporter
+cmd/openstack-bash-exporter/openstack-bash-exporter-linux
+cmd/openstack-bash-exporter/openstack-bash-exporter-macos
+cmd/openstack-bash-exporter/*.sh
 examples/.*

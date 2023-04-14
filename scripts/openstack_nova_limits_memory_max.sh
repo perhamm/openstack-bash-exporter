@@ -2,10 +2,10 @@
 
 MAXTOTALRAMSIZE=$(openstack --os-cloud=openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalRAMSize") | .Value')
 
-TENANTID=$(cat clouds.yaml | shyaml get-value clouds.openstack.auth.project_id)
+TENANT_ID=$(cat clouds.yaml | shyaml get-value clouds.openstack.auth.project_id)
 
-PROJECTNAME=$(cat clouds.yaml | shyaml get-value clouds.openstack.auth.project_name)
+PROJECT_NAME=$(cat clouds.yaml | shyaml get-value clouds.openstack.auth.project_name)
 
-echo '{"labels": {"tenantid": "'$TENANTID'","projectname": "'$PROJECTNAME'"}, "results": {"items": '$MAXTOTALRAMSIZE'} }'
+echo '{"labels": {"tenant_id": "'$TENANT_ID'","project_name": "'$PROJECT_NAME'"}, "results": {"items": '$MAXTOTALRAMSIZE'} }'
 
 exit 0
