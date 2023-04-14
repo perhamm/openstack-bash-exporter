@@ -1,30 +1,52 @@
 FROM golang:1.20.3
-ADD cmd/openstack-bash-exporter ./src/cmd/openstack-bash-exporter
-WORKDIR /go/src/cmd/openstack-bash-exporter
-RUN go get -d
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o openstack-bash-exporter .
+ADD . /go/src/
+WORKDIR /go/src/
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o openstack-bash-exporter ./cmd/openstack-bash-exporter/
 
-FROM alpine:3.17
+FROM python:alpine3.17
 WORKDIR /root/
 
-RUN apk add --update \
-  bash \
-  bash-doc \
-  bash-completion \
-  bind-tools \
-  python-dev \
-  py-pip \
-  py-setuptools \
-  ca-certificates \
-  gcc \
-  libffi-dev \
-  openssl-dev \
-  musl-dev \
-  linux-headers \
-  && pip install --upgrade --no-cache-dir pip setuptools python-openstackclient \
-  && apk del gcc musl-dev linux-headers libffi-dev \
-  && rm -rf /var/cache/apk/*
+RUN apk update \
+    && apk add --no-cache \
+        curl \
+        jq \
+        vim \
+        bash \
+        bash-doc \
+        bash-completion \
+    && apk add --no-cache --virtual .build-deps \
+        gcc \
+        git \
+        libffi-dev \
+        linux-headers \
+        musl-dev \
+        openssl-dev \
+    && pip install --upgrade \
+        gnocchiclient \
+        pip \
+        python-barbicanclient \
+        python-ceilometerclient \
+        python-cinderclient \
+        python-cloudkittyclient \
+        python-designateclient \
+        python-fuelclient \
+        python-glanceclient \
+        python-heatclient \
+        python-magnumclient \
+        python-manilaclient \
+        python-mistralclient \
+        python-monascaclient \
+        python-muranoclient \
+        python-neutronclient \
+        python-novaclient \
+        python-openstackclient \
+        python-saharaclient \
+        python-senlinclient \
+        python-swiftclient \
+        python-troveclient \
+    && apk del .build-deps \
+    && rm -fr /var/cache/apk/*
 
-COPY --from=0 /go/src/cmd/openstack-bash-exporter/openstack-bash-exporter .
+COPY --from=0 /go/src/openstack-bash-exporter .
 COPY ./scripts/* /root/scripts/
 CMD ["./openstack-bash-exporter"]
