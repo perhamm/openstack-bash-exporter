@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gree-gorey/bash-exporter/pkg/run"
+	"github.com/perhamm/openstack-bash-exporter/pkg/run"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
