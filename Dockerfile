@@ -1,11 +1,30 @@
-FROM golang:1.13
-ADD cmd/bash-exporter ./src/cmd/bash-exporter
-WORKDIR /go/src/cmd/bash-exporter
-RUN go get -d 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bash-exporter .
+FROM golang:1.20.3
+ADD cmd/openstack-bash-exporter ./src/cmd/openstack-bash-exporter
+WORKDIR /go/src/cmd/openstack-bash-exporter
+RUN go get -d
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o openstack-bash-exporter .
 
-FROM alpine:3.7
+FROM alpine:3.17
 WORKDIR /root/
-COPY --from=0 /go/src/cmd/bash-exporter/bash-exporter .
-COPY ./examples/* /scripts/
-CMD ["./bash-exporter"]
+
+RUN apk add --update \
+  bash \
+  bash-doc \
+  bash-completion \
+  bind-tools \
+  python-dev \
+  py-pip \
+  py-setuptools \
+  ca-certificates \
+  gcc \
+  libffi-dev \
+  openssl-dev \
+  musl-dev \
+  linux-headers \
+  && pip install --upgrade --no-cache-dir pip setuptools python-openstackclient \
+  && apk del gcc musl-dev linux-headers libffi-dev \
+  && rm -rf /var/cache/apk/*
+
+COPY --from=0 /go/src/cmd/openstack-bash-exporter/openstack-bash-exporter .
+COPY ./scripts/* /root/scripts/
+CMD ["./openstack-bash-exporter"]
