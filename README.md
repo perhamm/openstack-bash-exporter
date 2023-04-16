@@ -31,4 +31,3 @@ Usage of ./openstack-bash-exporter:
   -web.listen-address string
     	Address on which to expose metrics (default ":9300")
 ```
-
