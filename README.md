@@ -23,7 +23,7 @@
 ## Usage
 
 ```console
-Usage of ./bash-exporter:
+Usage of ./openstack-bash-exporter:
   -debug
     	Debug log level
   -interval int
