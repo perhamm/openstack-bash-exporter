@@ -36,7 +36,7 @@ func main() {
 	addr := flag.String("web.listen-address", ":9300", "Address on which to expose metrics")
 	interval := flag.Int("interval", 300, "Interval for metrics collection in seconds")
 	path := flag.String("path", "./scripts", "path to directory with bash scripts")
-	labels := flag.String("labels", "project_name,tenant_id", "additioanal labels")
+	labels := flag.String("labels", "project_name", "additioanal labels")
 	// prefix := flag.String("prefix", "openstack_limits", "Prefix for metrics")
 	debug := flag.Bool("debug", false, "Debug log level")
 	flag.Parse()
