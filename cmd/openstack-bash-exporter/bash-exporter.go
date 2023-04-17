@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -40,6 +41,12 @@ func main() {
 	// prefix := flag.String("prefix", "openstack_limits", "Prefix for metrics")
 	debug := flag.Bool("debug", false, "Debug log level")
 	flag.Parse()
+
+	out, err := exec.Command(*path + "/create_cloud_clonfig_file.sh").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", out)
 
 	var labelsArr []string
 

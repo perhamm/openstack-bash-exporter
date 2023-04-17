@@ -1,7 +1,5 @@
 #!/bin/sh
 
-if [ ! -f /tmp/config ]; then kubectl -n d8-cloud-provider-openstack get secrets  cloud-controller-manager -o json | jq -r '.data."cloud-config"' | base64 -d > /tmp/config; fi
-
 export OS_AUTH_URL=$(cat /tmp/config | grep auth-url | awk -F'"' '{ print $2 }')
 export OS_IDENTITY_API_VERSION="3"
 export OS_INTERFACE="public"
