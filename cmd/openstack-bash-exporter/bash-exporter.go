@@ -44,7 +44,7 @@ func main() {
 	var labelsArr []string
 
 	labelsArr = strings.Split(*labels, ",")
-	labelsArr = append(labelsArr, "verb", "job")
+	labelsArr = append(labelsArr, "job") //"verb", "job")
 
 	verbMetricsVolMax = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -179,13 +179,13 @@ func Run(gaugevec *prometheus.GaugeVec, interval int, path string, names []strin
 		gaugevec.Reset()
 		for _, o := range oArr {
 
-			for metric, value := range o.Schema.Results {
+			for _, value := range o.Schema.Results {
 				for _, label := range labelsArr {
 					if _, ok := o.Schema.Labels[label]; !ok {
 						o.Schema.Labels[label] = ""
 					}
 				}
-				o.Schema.Labels["verb"] = metric
+				// o.Schema.Labels["verb"] = metric
 				o.Schema.Labels["job"] = o.Job
 				fmt.Println(o.Schema.Labels)
 				gaugevec.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
