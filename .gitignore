@@ -14,5 +14,8 @@
 cmd/openstack-bash-exporter/openstack-bash-exporter
 cmd/openstack-bash-exporter/openstack-bash-exporter-linux
 cmd/openstack-bash-exporter/openstack-bash-exporter-macos
+openstack-bash-exporter
+openstack-bash-exporter-linux
+openstack-bash-exporter-macos
 cmd/openstack-bash-exporter/*.sh
 examples/.*

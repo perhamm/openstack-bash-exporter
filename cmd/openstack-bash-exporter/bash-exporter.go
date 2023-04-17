@@ -146,16 +146,16 @@ func main() {
 
 	http.HandleFunc("/health", handlers.NewJSONHandlerFunc(h, nil))
 	http.Handle("/metrics", promhttp.Handler())
-	go RunVolMax(int(*interval), *path, namesVolMax, labelsArr, *debug)
-	go RunVolUsed(int(*interval), *path, namesVolUsed, labelsArr, *debug)
-	go RunMemMax(int(*interval), *path, namesMemMax, labelsArr, *debug)
-	go RunMemUsed(int(*interval), *path, namesMemUsed, labelsArr, *debug)
-	go RunCpuMax(int(*interval), *path, namesCpuMax, labelsArr, *debug)
-	go RunCpuUsed(int(*interval), *path, namesCpuUsed, labelsArr, *debug)
+	go Run(verbMetricsVolMax, int(*interval), *path, namesVolMax, labelsArr, *debug)
+	go Run(verbMetricsVolUsed, int(*interval), *path, namesVolUsed, labelsArr, *debug)
+	go Run(verbMetricsMemMax, int(*interval), *path, namesMemMax, labelsArr, *debug)
+	go Run(verbMetricsMemUsed, int(*interval), *path, namesMemUsed, labelsArr, *debug)
+	go Run(verbMetricsCpuMax, int(*interval), *path, namesCpuMax, labelsArr, *debug)
+	go Run(verbMetricsCpuUsed, int(*interval), *path, namesCpuUsed, labelsArr, *debug)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
-func RunVolMax(interval int, path string, names []string, labelsArr []string, debug bool) {
+func Run(gaugevec *prometheus.GaugeVec, interval int, path string, names []string, labelsArr []string, debug bool) {
 	for {
 		var wg sync.WaitGroup
 		oArr := []*run.Output{}
@@ -176,7 +176,7 @@ func RunVolMax(interval int, path string, names []string, labelsArr []string, de
 		// 	}
 		// 	log.Println(string(ser))
 		// }
-		verbMetricsVolMax.Reset()
+		gaugevec.Reset()
 		for _, o := range oArr {
 
 			for metric, value := range o.Schema.Results {
@@ -188,207 +188,7 @@ func RunVolMax(interval int, path string, names []string, labelsArr []string, de
 				o.Schema.Labels["verb"] = metric
 				o.Schema.Labels["job"] = o.Job
 				fmt.Println(o.Schema.Labels)
-				verbMetricsVolMax.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
-			}
-		}
-		time.Sleep(time.Duration(interval) * time.Second)
-	}
-}
-
-func RunVolUsed(interval int, path string, names []string, labelsArr []string, debug bool) {
-	for {
-		var wg sync.WaitGroup
-		oArr := []*run.Output{}
-		wg.Add(len(names))
-		for _, name := range names {
-			o := run.Output{}
-			o.Job = strings.Split(name, ".")[0]
-			oArr = append(oArr, &o)
-			thisPath := path + "/" + name
-			p := run.Params{UseWg: true, Wg: &wg, Path: &thisPath}
-			go o.RunJob(&p)
-		}
-		wg.Wait()
-		// if debug == true {
-		// 	ser, err := json.Marshal(o)
-		// 	if err != nil {
-		// 		log.Println(err)
-		// 	}
-		// 	log.Println(string(ser))
-		// }
-		verbMetricsVolUsed.Reset()
-		for _, o := range oArr {
-
-			for metric, value := range o.Schema.Results {
-				for _, label := range labelsArr {
-					if _, ok := o.Schema.Labels[label]; !ok {
-						o.Schema.Labels[label] = ""
-					}
-				}
-				o.Schema.Labels["verb"] = metric
-				o.Schema.Labels["job"] = o.Job
-				fmt.Println(o.Schema.Labels)
-				verbMetricsVolUsed.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
-			}
-		}
-		time.Sleep(time.Duration(interval) * time.Second)
-	}
-}
-
-func RunMemMax(interval int, path string, names []string, labelsArr []string, debug bool) {
-	for {
-		var wg sync.WaitGroup
-		oArr := []*run.Output{}
-		wg.Add(len(names))
-		for _, name := range names {
-			o := run.Output{}
-			o.Job = strings.Split(name, ".")[0]
-			oArr = append(oArr, &o)
-			thisPath := path + "/" + name
-			p := run.Params{UseWg: true, Wg: &wg, Path: &thisPath}
-			go o.RunJob(&p)
-		}
-		wg.Wait()
-		// if debug == true {
-		// 	ser, err := json.Marshal(o)
-		// 	if err != nil {
-		// 		log.Println(err)
-		// 	}
-		// 	log.Println(string(ser))
-		// }
-		verbMetricsMemMax.Reset()
-		for _, o := range oArr {
-
-			for metric, value := range o.Schema.Results {
-				for _, label := range labelsArr {
-					if _, ok := o.Schema.Labels[label]; !ok {
-						o.Schema.Labels[label] = ""
-					}
-				}
-				o.Schema.Labels["verb"] = metric
-				o.Schema.Labels["job"] = o.Job
-				fmt.Println(o.Schema.Labels)
-				verbMetricsMemMax.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
-			}
-		}
-		time.Sleep(time.Duration(interval) * time.Second)
-	}
-}
-
-func RunMemUsed(interval int, path string, names []string, labelsArr []string, debug bool) {
-	for {
-		var wg sync.WaitGroup
-		oArr := []*run.Output{}
-		wg.Add(len(names))
-		for _, name := range names {
-			o := run.Output{}
-			o.Job = strings.Split(name, ".")[0]
-			oArr = append(oArr, &o)
-			thisPath := path + "/" + name
-			p := run.Params{UseWg: true, Wg: &wg, Path: &thisPath}
-			go o.RunJob(&p)
-		}
-		wg.Wait()
-		// if debug == true {
-		// 	ser, err := json.Marshal(o)
-		// 	if err != nil {
-		// 		log.Println(err)
-		// 	}
-		// 	log.Println(string(ser))
-		// }
-		verbMetricsMemUsed.Reset()
-		for _, o := range oArr {
-
-			for metric, value := range o.Schema.Results {
-				for _, label := range labelsArr {
-					if _, ok := o.Schema.Labels[label]; !ok {
-						o.Schema.Labels[label] = ""
-					}
-				}
-				o.Schema.Labels["verb"] = metric
-				o.Schema.Labels["job"] = o.Job
-				fmt.Println(o.Schema.Labels)
-				verbMetricsMemUsed.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
-			}
-		}
-		time.Sleep(time.Duration(interval) * time.Second)
-	}
-}
-
-func RunCpuMax(interval int, path string, names []string, labelsArr []string, debug bool) {
-	for {
-		var wg sync.WaitGroup
-		oArr := []*run.Output{}
-		wg.Add(len(names))
-		for _, name := range names {
-			o := run.Output{}
-			o.Job = strings.Split(name, ".")[0]
-			oArr = append(oArr, &o)
-			thisPath := path + "/" + name
-			p := run.Params{UseWg: true, Wg: &wg, Path: &thisPath}
-			go o.RunJob(&p)
-		}
-		wg.Wait()
-		// if debug == true {
-		// 	ser, err := json.Marshal(o)
-		// 	if err != nil {
-		// 		log.Println(err)
-		// 	}
-		// 	log.Println(string(ser))
-		// }
-		verbMetricsCpuMax.Reset()
-		for _, o := range oArr {
-
-			for metric, value := range o.Schema.Results {
-				for _, label := range labelsArr {
-					if _, ok := o.Schema.Labels[label]; !ok {
-						o.Schema.Labels[label] = ""
-					}
-				}
-				o.Schema.Labels["verb"] = metric
-				o.Schema.Labels["job"] = o.Job
-				fmt.Println(o.Schema.Labels)
-				verbMetricsCpuMax.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
-			}
-		}
-		time.Sleep(time.Duration(interval) * time.Second)
-	}
-}
-
-func RunCpuUsed(interval int, path string, names []string, labelsArr []string, debug bool) {
-	for {
-		var wg sync.WaitGroup
-		oArr := []*run.Output{}
-		wg.Add(len(names))
-		for _, name := range names {
-			o := run.Output{}
-			o.Job = strings.Split(name, ".")[0]
-			oArr = append(oArr, &o)
-			thisPath := path + "/" + name
-			p := run.Params{UseWg: true, Wg: &wg, Path: &thisPath}
-			go o.RunJob(&p)
-		}
-		wg.Wait()
-		// if debug == true {
-		// 	ser, err := json.Marshal(o)
-		// 	if err != nil {
-		// 		log.Println(err)
-		// 	}
-		// 	log.Println(string(ser))
-		// }
-		verbMetricsCpuUsed.Reset()
-		for _, o := range oArr {
-
-			for metric, value := range o.Schema.Results {
-				for _, label := range labelsArr {
-					if _, ok := o.Schema.Labels[label]; !ok {
-						o.Schema.Labels[label] = ""
-					}
-				}
-				o.Schema.Labels["verb"] = metric
-				o.Schema.Labels["job"] = o.Job
-				fmt.Println(o.Schema.Labels)
-				verbMetricsCpuUsed.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
+				gaugevec.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
 			}
 		}
 		time.Sleep(time.Duration(interval) * time.Second)
