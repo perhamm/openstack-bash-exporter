@@ -52,4 +52,5 @@ RUN chmod u+x kubectl && mv kubectl /bin/kubectl
 
 COPY --from=0 /go/src/openstack-bash-exporter .
 COPY ./scripts/* /root/scripts/
+RUN chmod u+x /root/scripts/*
 CMD ["./openstack-bash-exporter"]
