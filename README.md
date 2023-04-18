@@ -1,25 +1,7 @@
 ## K8s quick start
 
-```env example
-        - name: OS_AUTH_URL
-          value: "https://test
-        - name: OS_IDENTITY_API_VERSION
-          value: "3"
-        - name: OS_INTERFACE
-          value: "public"
-        - name: OS_PASSWORD
-          value: "test"
-        - name: OS_PROJECT_ID
-          value: "test"
-        - name: OS_PROJECT_NAME
-          value: "t-devops"
-        - name: OS_REGION_NAME
-          value: "RegionOne"
-        - name: OS_USERNAME
-          value: "sa-vvc-test"
-        - name: OS_USER_DOMAIN_NAME
-          value: "test"
-```
+The variables to use the openstack command are taken from the cluster, for which the first step is to run create_cloud_clonfig_file.sh
+
 ## Usage
 
 ```console
