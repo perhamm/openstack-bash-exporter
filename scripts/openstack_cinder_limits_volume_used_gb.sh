@@ -11,6 +11,12 @@ export OS_USER_DOMAIN_NAME=$(cat /tmp/config | grep domain-name | awk -F'"' '{ p
 
 TOTALGIGABYTESUSED=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="totalGigabytesUsed") | .Value')
 
+while ! [[ $TOTALGIGABYTESUSED =~ '^[0-9]+$' ]]
+do
+  sleep 10
+  TOTALGIGABYTESUSED=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="totalGigabytesUsed") | .Value')
+done
+
 echo '{"labels": {"tenant_id": "'$OS_PROJECT_ID'"}, "results": {"items": '$TOTALGIGABYTESUSED'} }'
 
 exit 0

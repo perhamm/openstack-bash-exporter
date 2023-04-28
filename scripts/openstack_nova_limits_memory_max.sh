@@ -11,6 +11,12 @@ export OS_USER_DOMAIN_NAME=$(cat /tmp/config | grep domain-name | awk -F'"' '{ p
 
 MAXTOTALRAMSIZE=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalRAMSize") | .Value')
 
+while ! [[ $MAXTOTALRAMSIZE =~ '^[0-9]+$' ]]
+do
+  sleep 10
+  MAXTOTALRAMSIZE=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalRAMSize") | .Value')
+done
+
 echo '{"labels": {"tenant_id": "'$OS_PROJECT_ID'"}, "results": {"items": '$MAXTOTALRAMSIZE'} }'
 
 exit 0

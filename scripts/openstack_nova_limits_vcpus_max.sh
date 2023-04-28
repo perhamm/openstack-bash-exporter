@@ -11,6 +11,12 @@ export OS_USER_DOMAIN_NAME=$(cat /tmp/config | grep domain-name | awk -F'"' '{ p
 
 MAXTOTALCORES=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalCores") | .Value')
 
+while ! [[ $MAXTOTALCORES =~ '^[0-9]+$' ]]
+do
+  sleep 10
+  MAXTOTALCORES=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalCores") | .Value')
+done
+
 echo '{"labels": {"tenant_id": "'$OS_PROJECT_ID'"}, "results": {"items": '$MAXTOTALCORES'} }'
 
 exit 0

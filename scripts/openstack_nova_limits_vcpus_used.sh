@@ -11,6 +11,12 @@ export OS_USER_DOMAIN_NAME=$(cat /tmp/config | grep domain-name | awk -F'"' '{ p
 
 TOTALCORESUSED=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="totalCoresUsed") | .Value')
 
+while ! [[ $TOTALCORESUSED =~ '^[0-9]+$' ]]
+do
+  sleep 10
+  TOTALCORESUSED=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="totalCoresUsed") | .Value')
+done
+
 echo '{"labels": {"tenant_id": "'$OS_PROJECT_ID'"}, "results": {"items": '$TOTALCORESUSED'} }'
 
 exit 0

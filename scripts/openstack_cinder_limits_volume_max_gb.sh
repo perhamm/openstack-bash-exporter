@@ -11,6 +11,12 @@ export OS_USER_DOMAIN_NAME=$(cat /tmp/config | grep domain-name | awk -F'"' '{ p
 
 MAXTOTALVOLUMEGIGABYTES=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalVolumeGigabytes") | .Value')
 
+while ! [[ $MAXTOTALVOLUMEGIGABYTES =~ '^[0-9]+$' ]]
+do
+  sleep 10
+  MAXTOTALVOLUMEGIGABYTES=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="maxTotalVolumeGigabytes") | .Value')
+done
+
 echo '{"labels": {"tenant_id": "'$OS_PROJECT_ID'"}, "results": {"items": '$MAXTOTALVOLUMEGIGABYTES'} }'
 
 exit 0

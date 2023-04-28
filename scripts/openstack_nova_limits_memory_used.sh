@@ -11,6 +11,12 @@ export OS_USER_DOMAIN_NAME=$(cat /tmp/config | grep domain-name | awk -F'"' '{ p
 
 TOTALRAMUSED=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="totalRAMUsed") | .Value')
 
+while ! [[ $TOTALRAMUSED =~ '^[0-9]+$' ]]
+do
+  sleep 10
+  TOTALRAMUSED=$(openstack limits show --absolute -f json | jq '.[] | select(.Name=="totalRAMUsed") | .Value')
+done
+
 echo '{"labels": {"tenant_id": "'$OS_PROJECT_ID'"}, "results": {"items": '$TOTALRAMUSED'} }'
 
 exit 0
